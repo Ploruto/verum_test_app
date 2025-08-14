@@ -9,10 +9,11 @@ pub fn user_to_create_params(user: User) -> List(Value) {
     pog.int(user.id),
     pog.text(user.name),
     pog.text(user.email),
-    case user.bio {
+    case user.description {
       Some(val) -> pog.text(val)
       None -> pog.null()
-    }
+    },
+    pog.int(user.age)
   ]
 }
 
@@ -21,7 +22,8 @@ pub fn partial_user_to_update_params(partial: PartialUser) -> List(#(String, Val
   []
   |> add_if_present("name", partial.name, pog.text)
   |> add_if_present("email", partial.email, pog.text)
-  |> add_if_present_optional("bio", partial.bio, pog.text, pog.null())
+  |> add_if_present_optional("description", partial.description, pog.text, pog.null())
+  |> add_if_present("age", partial.age, pog.int)
 }
 
 /// Add field to update list if value is present

@@ -4,23 +4,24 @@ import gleam/int
 import gleam/list
 import gleam/result
 import gleam/string
-import generated/models/user.{type User, type UserField, User, Id, Name, Email, Bio, CreatedAt, UpdatedAt}
+import generated/models/user.{type User, type UserField, User, Id, Name, Email, Description, CreatedAt, UpdatedAt, Age}
 import pog.{type Connection, type QueryError, type Returned, type Value}
 
 /// Timestamp decoder - decode integers to strings for now  
 const decode_timestamp = decode.int
 
 /// Decoder for converting database rows to User type
-/// Expects columns in order: id, name, email, bio, created_at, updated_at
+/// Expects columns in order: id, name, email, description, created_at, updated_at, age
 fn user_decoder() {
   {
     use id <- decode.field(0, decode.int)
   use name <- decode.field(1, decode.string)
   use email <- decode.field(2, decode.string)
-  use bio <- decode.field(3, decode.optional(decode.string))
+  use description <- decode.field(3, decode.optional(decode.string))
   use created_at <- decode.field(4, decode_timestamp)
   use updated_at <- decode.field(5, decode_timestamp)
-    decode.success(User(id:, name:, email:, bio:, created_at:, updated_at:))
+  use age <- decode.field(6, decode.int)
+    decode.success(User(id:, name:, email:, description:, created_at:, updated_at:, age:))
   }
 }
 
@@ -30,16 +31,17 @@ pub fn field_to_column_name(field: UserField) -> String {
     Id -> "id"
     Name -> "name"
     Email -> "email"
-    Bio -> "bio"
+    Description -> "description"
     CreatedAt -> "created_at"
     UpdatedAt -> "updated_at"
+    Age -> "age"
   }
 }
 
 /// Find all user records
 pub fn find_all(conn: Connection) -> Result(List(User), QueryError) {
   let query = 
-    pog.query("SELECT id, name, email, bio, created_at, updated_at FROM users")
+    pog.query("SELECT id, name, email, description, created_at, updated_at, age FROM users")
     |> pog.returning(user_decoder())
   
   case pog.execute(query, conn) {
@@ -55,7 +57,7 @@ pub fn find_by_field(
   value: Value,
 ) -> Result(List(User), QueryError) {
   let field_name = field_to_column_name(field)
-  let sql = "SELECT id, name, email, bio, created_at, updated_at FROM users WHERE " <> field_name <> " = $1"
+  let sql = "SELECT id, name, email, description, created_at, updated_at, age FROM users WHERE " <> field_name <> " = $1"
   
   let query = 
     pog.query(sql)
@@ -71,7 +73,7 @@ pub fn find_by_field(
 /// Find a user by ID
 pub fn find_by_id(conn: Connection, id: Value) -> Result(List(User), QueryError) {
   let query = 
-    pog.query("SELECT id, name, email, bio, created_at, updated_at FROM users WHERE id = $1")
+    pog.query("SELECT id, name, email, description, created_at, updated_at, age FROM users WHERE id = $1")
     |> pog.returning(user_decoder())
     |> pog.parameter(id)
   
@@ -87,9 +89,10 @@ pub fn create(
   id: Value,
   name: Value,
   email: Value,
-  bio: Value,
+  description: Value,
+  age: Value,
 ) -> Result(User, QueryError) {
-  let sql = "INSERT INTO users (id, name, email, bio) VALUES ($1, $2, $3, $4) RETURNING id, name, email, bio, created_at, updated_at"
+  let sql = "INSERT INTO users (id, name, email, description, age) VALUES ($1, $2, $3, $4, $5) RETURNING id, name, email, description, created_at, updated_at, age"
   
   let query = 
     pog.query(sql)
@@ -97,7 +100,8 @@ pub fn create(
     |> pog.parameter(id)
     |> pog.parameter(name)
     |> pog.parameter(email)
-    |> pog.parameter(bio)
+    |> pog.parameter(description)
+    |> pog.parameter(age)
   
   case pog.execute(query, conn) {
     Ok(result) -> {
@@ -116,9 +120,10 @@ pub fn update(
   id: Value,
   name: Value,
   email: Value,
-  bio: Value,
+  description: Value,
+  age: Value,
 ) -> Result(User, QueryError) {
-  let sql = "UPDATE users SET name = $2, email = $3, bio = $4 WHERE id = $1 RETURNING id, name, email, bio, created_at, updated_at"
+  let sql = "UPDATE users SET name = $2, email = $3, description = $4, age = $5 WHERE id = $1 RETURNING id, name, email, description, created_at, updated_at, age"
   
   let query = 
     pog.query(sql)
@@ -126,7 +131,8 @@ pub fn update(
     |> pog.parameter(id)
     |> pog.parameter(name)
     |> pog.parameter(email)
-    |> pog.parameter(bio)
+    |> pog.parameter(description)
+    |> pog.parameter(age)
   
   case pog.execute(query, conn) {
     Ok(result) -> {
@@ -156,7 +162,7 @@ pub fn update_partial(
         })
         |> string.join(", ")
       
-      let sql = "UPDATE users SET " <> set_clauses <> " WHERE id = $1 RETURNING id, name, email, bio, created_at, updated_at"
+      let sql = "UPDATE users SET " <> set_clauses <> " WHERE id = $1 RETURNING id, name, email, description, created_at, updated_at, age"
       
       let query =
         pog.query(sql)

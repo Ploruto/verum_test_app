@@ -9,8 +9,8 @@ import gleam/list
 pub fn create_user(conn: Connection, user: User) -> Result(User, QueryError) {
   let params = user_serializer.user_to_create_params(user)
   case params {
-    [id_param, name_param, email_param, bio_param] -> 
-      user_query.create(conn, id_param, name_param, email_param, bio_param)
+    [id_param, name_param, email_param, description_param, age_param] -> 
+      user_query.create(conn, id_param, name_param, email_param, description_param, age_param)
     _ -> Error(pog.ConstraintViolated("Invalid parameters for User", "", ""))
   }
 }
