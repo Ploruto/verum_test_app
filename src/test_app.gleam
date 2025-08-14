@@ -1,3 +1,4 @@
+import generated/database
 import generated/models/user
 import generated/queries/user_query
 import gleam/int
@@ -5,7 +6,6 @@ import gleam/io
 import gleam/list
 import gleam/string
 import pog.{type Value}
-import verum/core/database
 
 pub fn main() -> Nil {
   io.println("=== Verum Test App ===")

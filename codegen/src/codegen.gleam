@@ -1,4 +1,5 @@
 import gleam/io
+import gleam/option.{None}
 import verum/core/app_spec.{AppSpec}
 import verum/core/generator
 import verum/core/model.{
@@ -85,7 +86,16 @@ pub fn main() -> Nil {
     )
     |> model.with_model_timestamps()
 
-  let app_spec = AppSpec(models: [user_model, post_model])
+  let db_config =
+    app_spec.DatabaseConfig(
+      host: "localhost",
+      port: 5432,
+      database: "genau_db",
+      user: "postgres",
+      password: None,
+    )
+
+  let app_spec = AppSpec(models: [user_model, post_model], database: db_config)
 
   // Generate to the parent directory's generated/ folder
   case generator.generate_and_write(app_spec, "src") {

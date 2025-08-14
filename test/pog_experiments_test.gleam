@@ -1,9 +1,9 @@
+import generated/database
 import generated/models/post.{Post}
 import generated/models/user.{User}
 import generated/repositories/user_repository
 import gleam/option.{None, Some}
 import gleeunit/should
-import verum/core/database
 
 // Test that our generated model types can be constructed correctly
 pub fn user_model_creation_test() {
@@ -19,9 +19,6 @@ pub fn user_model_creation_test() {
 
   case database.start_database() {
     Ok(db) -> {
-      database.cleanup_users_table(db)
-      database.create_users_table(db)
-
       case user_repository.create_user(db, test_user) {
         Ok(sql_user) -> {
           should.equal(test_user.name, sql_user.name)

@@ -14,7 +14,7 @@ const decode_timestamp = decode.int
 /// Expects columns in order: id, name, email, bio, created_at, updated_at
 fn user_decoder() {
   {
-    use id <- decode.field(0, decode.int)
+    use id <- decode.field(0, decode.string)
   use name <- decode.field(1, decode.string)
   use email <- decode.field(2, decode.string)
   use bio <- decode.field(3, decode.optional(decode.string))
