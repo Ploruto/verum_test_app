@@ -1,4 +1,4 @@
-import generated/models/user.{type User, type PartialUser}
+import generated/models/user.{type User, type PartialUser, type InsertUser}
 import pog.{type Value}
 import gleam/option.{None, Some}
 import gleam/list
@@ -6,7 +6,6 @@ import gleam/list
 /// Convert User to create parameters
 pub fn user_to_create_params(user: User) -> List(Value) {
   [
-    pog.int(user.id),
     pog.text(user.name),
     pog.text(user.email),
     case user.description {
@@ -17,12 +16,26 @@ pub fn user_to_create_params(user: User) -> List(Value) {
   ]
 }
 
+/// Convert InsertUser to create parameters
+pub fn insert_user_to_create_params(insert_user: InsertUser) -> List(Value) {
+  [
+    pog.text(insert_user.name),
+    pog.text(insert_user.email),
+    case insert_user.description {
+      Some(val) -> pog.text(val)
+      None -> pog.null()
+    },
+    pog.int(insert_user.age)
+  ]
+}
+
 /// Convert PartialUser to update parameters
 pub fn partial_user_to_update_params(partial: PartialUser) -> List(#(String, Value)) {
   []
   |> add_if_present("name", partial.name, pog.text)
   |> add_if_present("email", partial.email, pog.text)
   |> add_if_present_optional("description", partial.description, pog.text, pog.null())
+  |> add_if_present("order_number", partial.order_number, pog.int)
   |> add_if_present("age", partial.age, pog.int)
 }
 

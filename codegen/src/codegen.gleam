@@ -20,7 +20,7 @@ pub fn main() -> Nil {
           |> field.with_name("id")
           |> field.with_data_type(model.Int)
           |> field.as_primary_key()
-          |> field.with_constraints([model.NotNull]),
+          |> field.as_auto_increment(),
         field.new()
           |> field.with_name("name")
           |> field.with_data_type(model.String(100))
@@ -34,6 +34,10 @@ pub fn main() -> Nil {
         field.new()
           |> field.with_name("bio")
           |> field.with_data_type(model.Text),
+        field.new()
+          |> field.with_name("order_number")
+          |> field.with_data_type(model.Int)
+          |> field.with_sequence("user_order_seq"),
       ],
       relationships: [],
     )
@@ -48,7 +52,7 @@ pub fn main() -> Nil {
           |> field.with_name("id")
           |> field.with_data_type(model.UUID)
           |> field.as_primary_key()
-          |> field.with_constraints([model.NotNull]),
+          |> field.as_auto_uuid(),
         field.new()
           |> field.with_name("title")
           |> field.with_data_type(model.String(200))

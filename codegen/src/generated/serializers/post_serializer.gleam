@@ -1,4 +1,4 @@
-import generated/models/post.{type Post, type PartialPost}
+import generated/models/post.{type Post, type PartialPost, type InsertPost}
 import pog.{type Value}
 import gleam/option.{None, Some}
 import gleam/list
@@ -6,7 +6,6 @@ import gleam/list
 /// Convert Post to create parameters
 pub fn post_to_create_params(post: Post) -> List(Value) {
   [
-    pog.text(post.id),
     pog.text(post.title),
     case post.content {
       Some(val) -> pog.text(val)
@@ -14,6 +13,19 @@ pub fn post_to_create_params(post: Post) -> List(Value) {
     },
     pog.bool(post.published),
     pog.text(post.user_id)
+  ]
+}
+
+/// Convert InsertPost to create parameters
+pub fn insert_post_to_create_params(insert_post: InsertPost) -> List(Value) {
+  [
+    pog.text(insert_post.title),
+    case insert_post.content {
+      Some(val) -> pog.text(val)
+      None -> pog.null()
+    },
+    pog.bool(insert_post.published),
+    pog.text(insert_post.user_id)
   ]
 }
 

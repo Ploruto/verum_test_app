@@ -86,18 +86,16 @@ pub fn find_by_id(conn: Connection, id: Value) -> Result(List(Post), QueryError)
 /// Create a new post record
 pub fn create(
   conn: Connection,
-  id: Value,
   title: Value,
   content: Value,
   published: Value,
   user_id: Value,
 ) -> Result(Post, QueryError) {
-  let sql = "INSERT INTO posts (id, title, content, published, user_id) VALUES ($1, $2, $3, $4, $5) RETURNING id, title, content, published, user_id, created_at, updated_at"
+  let sql = "INSERT INTO posts (title, content, published, user_id) VALUES ($1, $2, $3, $4) RETURNING id, title, content, published, user_id, created_at, updated_at"
   
   let query = 
     pog.query(sql)
     |> pog.returning(post_decoder())
-    |> pog.parameter(id)
     |> pog.parameter(title)
     |> pog.parameter(content)
     |> pog.parameter(published)

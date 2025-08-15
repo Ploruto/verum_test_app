@@ -1,16 +1,16 @@
-import generated/models/post.{type Post, type PartialPost}
+import generated/models/post.{type Post, type PartialPost, type InsertPost}
 import generated/queries/post_query
 import generated/serializers/post_serializer
 import pog.{type Connection, type QueryError}
 import gleam/result
 import gleam/list
 
-/// Create a new post using type-safe parameters
-pub fn create_post(conn: Connection, post: Post) -> Result(Post, QueryError) {
-  let params = post_serializer.post_to_create_params(post)
+/// Create a new post using Insert DTO
+pub fn create_post(conn: Connection, insert_post: InsertPost) -> Result(Post, QueryError) {
+  let params = post_serializer.insert_post_to_create_params(insert_post)
   case params {
-    [id_param, title_param, content_param, published_param, user_id_param] -> 
-      post_query.create(conn, id_param, title_param, content_param, published_param, user_id_param)
+    [title_param, content_param, published_param, user_id_param] -> 
+      post_query.create(conn, title_param, content_param, published_param, user_id_param)
     _ -> Error(pog.ConstraintViolated("Invalid parameters for Post", "", ""))
   }
 }

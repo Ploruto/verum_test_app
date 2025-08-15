@@ -25,6 +25,16 @@ pub type PostField {
   UpdatedAt
 }
 
+/// Insert DTO for post (excludes auto-generated fields)
+pub type InsertPost {
+  InsertPost(
+    title: String,
+    content: Option(String),
+    published: Bool,
+    user_id: String,
+  )
+}
+
 /// Partial Post for updates
 pub type PartialPost {
   PartialPost(

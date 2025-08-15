@@ -1,10 +1,11 @@
 -- Migration 001: initial schema
 -- =====================================
 CREATE TABLE users (
-  id INTEGER NOT NULL PRIMARY KEY,
+  id SERIAL NOT NULL PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
   email VARCHAR(255) UNIQUE NOT NULL,
   bio TEXT,
+  order_number INTEGER NOT NULL DEFAULT nextval('user_order_seq'),
   created_at BIGINT NOT NULL,
   updated_at BIGINT NOT NULL
 );
@@ -12,7 +13,7 @@ CREATE TABLE users (
 CREATE INDEX users_id_idx ON users (id);
 
 CREATE TABLE posts (
-  id VARCHAR(36) NOT NULL PRIMARY KEY,
+  id UUID NOT NULL PRIMARY KEY DEFAULT gen_random_uuid(),
   title VARCHAR(200) NOT NULL,
   content TEXT,
   published BOOLEAN NOT NULL,
